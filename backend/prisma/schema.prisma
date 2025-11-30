@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Tabela de Usuários (Responsáveis)
+model User {
+  id           String   @id @default(uuid())
+  name         String   @map("nome")
+  email        String   @unique
+  passwordHash String   @map("senha_hash")
+  gender       String   @map("sexo")
+  birthDate    DateTime @map("data_nascimento")
+  avatarUrl    String?  @map("img_url")
+
+  children     UserChild[]
+
+  @@map("users")
+}
+
+// Tabela de Filhos
+model Child {
+  id           String   @id @default(uuid())
+  name         String   @map("nome")
+  avatarUrl    String?  @map("img_url")
+  birthDate    DateTime @map("data_nascimento")
+  supportLevel Int      @map("nivel_suporte")
+  notes        String?  @map("observacoes")
+
+  guardians    UserChild[]
+
+  @@map("children")
+}
+
+// Tabela Pivô (Filho_Responsavel)
+model UserChild {
+  userId  String @map("usuario_id")
+  childId String @map("filho_id")
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  child   Child  @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@id([userId, childId])
+  @@map("filho_responsavel")
+}
