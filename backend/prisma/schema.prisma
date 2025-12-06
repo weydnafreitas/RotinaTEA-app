@@ -19,19 +19,22 @@ model User {
 
   children     UserChild[]
 
+  categories   Category[]
+
   @@map("users")
 }
 
 // Tabela de Filhos
 model Child {
-  id           String   @id @default(uuid())
-  name         String   @map("nome")
-  avatarUrl    String?  @map("img_url")
-  birthDate    DateTime @map("data_nascimento")
-  supportLevel Int      @map("nivel_suporte")
-  notes        String?  @map("observacoes")
+  id            String   @id @default(uuid())
+  name          String   @map("nome")
+  avatarUrl     String?  @map("img_url")
+  birthDate     DateTime @map("data_nascimento")
+  supportLevel  Int      @map("nivel_suporte")
+  notes         String?  @map("observacoes")
 
-  guardians    UserChild[]
+  guardians     UserChild[]
+  tasks         Task[]
 
   @@map("children")
 }
@@ -46,4 +49,53 @@ model UserChild {
 
   @@id([userId, childId])
   @@map("filho_responsavel")
+}
+
+// Tabela de Categorias
+model Category {
+  id     String @id @default(uuid())
+  name   String @map("nome")
+  color  String @map("cor") // Ex: "#FF0000"
+  userId String @map("usuario_id")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tasks  Task[]
+
+  @@map("categories")
+}
+
+// Tabela de Tarefas
+model Task {
+  id             String    @id @default(uuid())
+  name           String    @map("nome")
+  imgUrl         String?   @map("img_url")
+  time           String    @map("hora") // Vamos usar String "14:30" (SQLite não tem Time puro)
+  notes          String?   @map("observacoes")
+  status         String    @default("PENDENTE") // PENDENTE, CONCLUIDO
+  recurrenceType String    @map("recorrencia_tipo") // "DIARIO", "SEMANAL", "UNICO"
+  singleDate     DateTime? @map("data_unica")
+  recurrenceEnds DateTime? @map("recorrencia_ate")
+
+  childId      String    @map("filho_id")
+  categoryId   String?   @map("categoria_id") // Opcional, caso possa criar sem categoria
+
+  // Relacionamentos
+  child        Child     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  category     Category? @relation(fields: [categoryId], references: [id])
+  
+  days         TaskDay[] // Lista de dias da semana
+
+  @@map("tasks")
+}
+
+// Tabela Tarefa_Recorrencia_Dia
+model TaskDay {
+  id     String @id @default(uuid())
+  day    String @map("dia") // "SEG", "TER", "QUA"...
+  taskId String @map("tarefa_id")
+
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_recurrence_days")
 }

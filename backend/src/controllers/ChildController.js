@@ -34,5 +34,26 @@ module.exports = {
       console.error(error);
       return res.status(500).json({ error: "Erro ao cadastrar filho" });
     }
+  },
+
+  async list(req, res) {
+    try {
+      const userId = req.userId;
+
+      const children = await prisma.child.findMany({
+        where: {
+          guardians: {
+            some: {
+              userId: userId
+            }
+          }
+        }
+      });
+
+      return res.json(children);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Erro ao listar filhos" });
+    }
   }
 };
