@@ -17,6 +17,20 @@ module.exports = {
         notes 
       } = req.body;
 
+      const userId = req.userId;
+      const relation = await prisma.userChild.findUnique({
+        where: { 
+          userId_childId: { 
+            userId: userId, 
+            childId: childId 
+          } 
+        }
+      });
+
+      if (!relation || relation.role !== 'ADMIN') {
+        return res.status(403).json({ error: "Você não tem permissão para alterar dados deste filho (Apenas leitura)" });
+      }
+
       if (!name || !childId || !time || !recurrenceType) {
         return res.status(400).json({ error: "Campos obrigatórios faltando" });
       }

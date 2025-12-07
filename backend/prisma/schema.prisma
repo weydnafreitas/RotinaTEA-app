@@ -26,15 +26,17 @@ model User {
 
 // Tabela de Filhos
 model Child {
-  id            String   @id @default(uuid())
-  name          String   @map("nome")
-  avatarUrl     String?  @map("img_url")
-  birthDate     DateTime @map("data_nascimento")
-  supportLevel  Int      @map("nivel_suporte")
-  notes         String?  @map("observacoes")
+  id              String   @id @default(uuid())
+  name            String   @map("nome")
+  avatarUrl       String?  @map("img_url")
+  birthDate       DateTime @map("data_nascimento")
+  supportLevel    Int      @map("nivel_suporte")
+  notes           String?  @map("observacoes")
 
-  guardians     UserChild[]
-  tasks         Task[]
+  guardians       UserChild[]
+  tasks           Task[]
+  technicalInfos  TechnicalInfo[]
+  writtenNotes    Note[]
 
   @@map("children")
 }
@@ -43,6 +45,8 @@ model Child {
 model UserChild {
   userId  String @map("usuario_id")
   childId String @map("filho_id")
+
+  role    String @default("ADMIN") @map("funcao")
 
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   child   Child  @relation(fields: [childId], references: [id], onDelete: Cascade)
@@ -55,7 +59,7 @@ model UserChild {
 model Category {
   id     String @id @default(uuid())
   name   String @map("nome")
-  color  String @map("cor") // Ex: "#FF0000"
+  color  String @map("cor")
   userId String @map("usuario_id")
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -84,7 +88,7 @@ model Task {
   child        Child     @relation(fields: [childId], references: [id], onDelete: Cascade)
   category     Category? @relation(fields: [categoryId], references: [id])
   
-  days         TaskDay[] // Lista de dias da semana
+  days         TaskDay[]
 
   @@map("tasks")
 }
@@ -92,10 +96,37 @@ model Task {
 // Tabela Tarefa_Recorrencia_Dia
 model TaskDay {
   id     String @id @default(uuid())
-  day    String @map("dia") // "SEG", "TER", "QUA"...
+  day    String @map("dia")
   taskId String @map("tarefa_id")
 
   task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@map("task_recurrence_days")
+}
+
+// Tabela Filho_Informacao_Tecnica
+model TechnicalInfo {
+  id          String   @id @default(uuid())
+  type        String   @map("tipo") // Ex: "alergia", "gatilho"
+  description String   @map("descricao")
+  createdAt   DateTime @default(now()) @map("criado_em")
+  
+  childId     String   @map("filho_id")
+  child       Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("filho_informacao_tecnica")
+}
+
+// Tabela de Anotações
+model Note {
+  id        String   @id @default(uuid())
+  childId   String   @map("filho_id")
+  type      String   @map("tipo") // Ex: "diario", "ocorrencia"
+  text      String   @map("texto")
+  mediaUrl  String?  @map("media_url") // Opcional (fotos/audio)
+  createdAt DateTime @default(now()) @map("criado_em")
+
+  child     Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+
+  @@map("anotacoes")
 }
