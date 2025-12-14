@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const api = axios.create({
-  baseURL: "http://172.25.252.42:3000", // Para emulador Android - Para iOS use: http://localhost:3000
+  baseURL: "http://192.168.0.8:3000", // Para emulador Android - Para iOS use: http://localhost:3000
 });
 
 // Interceptor para adicionar token automaticamente

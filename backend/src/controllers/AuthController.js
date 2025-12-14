@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const prisma = new PrismaClient();
 
@@ -9,7 +9,7 @@ module.exports = {
   async register(req, res) {
     try {
       const { name, email, password, gender, birthDate, avatarUrl } = req.body;
-
+      console.log(req.body);
       const userExists = await prisma.user.findUnique({ where: { email } });
       if (userExists) {
         return res.status(400).json({ error: "Usuário já existe" });
@@ -29,9 +29,8 @@ module.exports = {
       });
 
       user.passwordHash = undefined;
-      
-      return res.status(201).json(user);
 
+      return res.status(201).json(user);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ error: "Erro no registro" });
@@ -63,10 +62,9 @@ module.exports = {
         user,
         token,
       });
-
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Erro no login" });
     }
-  }
+  },
 };
