@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 module.exports = {
@@ -6,10 +6,14 @@ module.exports = {
     try {
       const { name, birthDate, supportLevel, notes, avatarUrl } = req.body;
 
-      const userId = req.userId; 
+      console.log(req.body);
+
+      const userId = req.userId;
 
       if (!name || !birthDate || !supportLevel) {
-        return res.status(400).json({ error: "Nome, data e nível de suporte são obrigatórios" });
+        return res
+          .status(400)
+          .json({ error: "Nome, data e nível de suporte são obrigatórios" });
       }
 
       const child = await prisma.child.create({
@@ -19,17 +23,16 @@ module.exports = {
           supportLevel: parseInt(supportLevel),
           notes,
           avatarUrl,
-          
+
           guardians: {
             create: {
-              userId: userId 
-            }
-          }
-        }
+              userId: userId,
+            },
+          },
+        },
       });
 
       return res.status(201).json(child);
-
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Erro ao cadastrar filho" });
@@ -44,10 +47,10 @@ module.exports = {
         where: {
           guardians: {
             some: {
-              userId: userId
-            }
-          }
-        }
+              userId: userId,
+            },
+          },
+        },
       });
 
       return res.json(children);
@@ -55,5 +58,5 @@ module.exports = {
       console.error(error);
       return res.status(500).json({ error: "Erro ao listar filhos" });
     }
-  }
+  },
 };
