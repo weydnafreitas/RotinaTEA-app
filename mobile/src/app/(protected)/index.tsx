@@ -26,6 +26,10 @@ export default function HomePage() {
     loadChildren();
   }, []);
 
+  const handleEditDependents = () => {
+    router.push("/editDependents");
+  };
+
   const loadChildren = async () => {
     try {
       setLoading(true);
@@ -202,6 +206,29 @@ export default function HomePage() {
               <Text style={styles.emptyText}>Nenhum dependente cadastrado</Text>
             </View>
           )}
+
+          {/* Botão Cadastrar Atividade */}
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => router.push("/createTask")}
+          >
+            <MaterialIcons
+              name="edit"
+              size={24}
+              color={Colors.light.primary}
+            />
+            <Text style={styles.addButtonText}>Criar nova tarefa</Text>
+          </TouchableOpacity>
+
+          {/* Botão Editar Dependentes */}
+          <TouchableOpacity style={styles.addButton} onPress={handleEditDependents}>
+            <MaterialIcons
+              name="edit"
+              size={24}
+              color={Colors.light.primary}
+            />
+            <Text style={styles.addButtonText}>Editar dependentes</Text>
+          </TouchableOpacity>
 
           {/* Botão Adicionar Novo Filho */}
           <TouchableOpacity style={styles.addButton} onPress={handleAddChild}>

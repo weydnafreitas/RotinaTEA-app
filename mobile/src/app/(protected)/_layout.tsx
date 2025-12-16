@@ -22,6 +22,8 @@ export default function ProtectedLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ title: "Início" }} />
       <Stack.Screen name="addChild" options={{ title: "Adicionar Filho" }} />
+      <Stack.Screen name="editDependents" options={{ title: "Editar Dependentes" }} />
+      <Stack.Screen name="createTask" options={{ title: "Criar Atividade" }} />
     </Stack>
   );
 }
